@@ -1,5 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useLocalStorage } from "react-use";
 import { z } from "zod";
 
 /**
@@ -49,13 +51,17 @@ const formDataSchema = z.object({
 type FormData = z.infer<typeof formDataSchema>;
 
 function App() {
-  const { register, handleSubmit, watch } = useForm<FormData>({
+  const [defaultUsername, setDefaultUsername] =
+    useLocalStorage<string>("paypay-username");
+  const [defaultCurrency, setDefaultCurrency] =
+    useLocalStorage<string>("currency");
+  const { register, watch } = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
     defaultValues: {
-      username: "biedermannmarco",
+      username: defaultUsername,
       price: {
         amount: 10,
-        currency: "EUR",
+        currency: defaultCurrency,
       },
     },
   });
@@ -66,15 +72,16 @@ function App() {
   } = watch();
   const link = `https://paypal.me/${username}/${amount}${currency}`;
 
-  function onSubmit(data: FormData) {
-    console.log(data);
-  }
+  useEffect(() => {
+    setDefaultUsername(username);
+    setDefaultCurrency(currency);
+  }, [currency, username]);
 
   return (
     <div>
       <h1>PayPal.Me Link Generator</h1>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form>
         <div>
           <label htmlFor="username">Username</label>
           <input type="text" {...register("username")} />
