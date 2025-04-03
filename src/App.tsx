@@ -56,7 +56,7 @@ function App() {
   const [defaultCurrency, setDefaultCurrency] =
     useLocalStorage<string>("currency");
   const {
-    formState: { errors },
+    formState: { errors, isValid },
     register,
     watch,
   } = useForm<FormData>({
@@ -119,7 +119,7 @@ function App() {
         </div>
       </form>
 
-      <output>{link}</output>
+      {isValid && <output>{link}</output>}
     </div>
   );
 }
