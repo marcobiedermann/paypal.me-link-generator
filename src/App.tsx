@@ -41,10 +41,10 @@ const supportedCurrencies = [
 ] as const satisfies Currency[];
 
 const formDataSchema = z.object({
-  username: z.string(),
+  username: z.string().trim().min(3),
   price: z.object({
     amount: z.number().positive(),
-    currency: z.string(),
+    currency: z.string().trim().optional(),
   }),
 });
 
@@ -55,7 +55,11 @@ function App() {
     useLocalStorage<string>("paypay-username");
   const [defaultCurrency, setDefaultCurrency] =
     useLocalStorage<string>("currency");
-  const { register, watch } = useForm<FormData>({
+  const {
+    formState: { errors },
+    register,
+    watch,
+  } = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
     defaultValues: {
       username: defaultUsername,
@@ -64,6 +68,7 @@ function App() {
         currency: defaultCurrency,
       },
     },
+    mode: "onBlur",
   });
 
   const {
@@ -85,6 +90,7 @@ function App() {
         <div>
           <label htmlFor="username">Username</label>
           <input type="text" {...register("username")} />
+          {errors.username && <p>{errors.username.message}</p>}
         </div>
         <div>
           <label htmlFor="amount">Amount</label>
@@ -97,6 +103,7 @@ function App() {
               valueAsNumber: true,
             })}
           />
+          {errors.price?.amount && <p>{errors.price.amount.message}</p>}
         </div>
         <div>
           <label htmlFor="currency">Currency</label>
@@ -108,6 +115,7 @@ function App() {
               </option>
             ))}
           </select>
+          {errors.price?.currency && <p>{errors.price.currency.message}</p>}
         </div>
       </form>
 
