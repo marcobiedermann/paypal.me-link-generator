@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { useCopyToClipboard, useLocalStorage } from "react-use";
 import { z } from "zod";
 
+const PAYPAL_ME_URL = "https://paypal.me";
+
 /**
  * @link https://developer.paypal.com/docs/reports/reference/paypal-supported-currencies/
  */
@@ -42,6 +44,8 @@ const supportedCurrencies = [
   { name: "United States dollar", value: "USD", symbol: "$" },
 ] as const satisfies Currency[];
 
+const defaultCurrency = "EUR";
+
 const formDataSchema = z.object({
   username: z.string().trim().min(3),
   price: z.object({
@@ -61,7 +65,9 @@ function App() {
   const [, copyToClipboard] = useCopyToClipboard();
   const [defaultSettings, setDefaultSettings] = useLocalStorage<Settings>(
     "settings",
-    { currency: "EUR" }
+    {
+      currency: defaultCurrency,
+    }
   );
   const {
     formState: { errors, isValid },
@@ -83,7 +89,7 @@ function App() {
     username,
     price: { amount, currency },
   } = watch();
-  const link = `https://paypal.me/${username}/${amount}${currency}`;
+  const link = `${PAYPAL_ME_URL}/${username}/${amount}${currency}`;
 
   function onSubmit(data: FormData) {
     setDefaultSettings({
