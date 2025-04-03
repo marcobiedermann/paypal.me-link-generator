@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Link } from "lucide-react";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { useLocalStorage } from "react-use";
+import { useCopyToClipboard, useLocalStorage } from "react-use";
 import { z } from "zod";
 
 /**
@@ -57,6 +58,7 @@ interface Settings {
 }
 
 function App() {
+  const [_state, copyToClipboard] = useCopyToClipboard();
   const [defaultSettings, setDefaultSettings] = useLocalStorage<Settings>(
     "settings",
     { currency: "EUR" }
@@ -143,7 +145,14 @@ function App() {
           </div>
         </form>
 
-        {isValid && <output>{link}</output>}
+        {isValid && (
+          <output>
+            {link}{" "}
+            <button onClick={() => copyToClipboard(link)}>
+              <Link size={16} />
+            </button>
+          </output>
+        )}
       </div>
     </div>
   );

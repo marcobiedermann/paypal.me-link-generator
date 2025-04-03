@@ -11,6 +11,16 @@ body {
   min-block-size: 100vh;
 }
 
+button {
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: inline-block;
+  font: inherit;
+  padding: 0;
+}
+
 input,
 select {
   background-color: transparent;
