@@ -11,33 +11,34 @@ import { z } from "zod";
 interface Currency {
   name: string;
   value: string;
+  symbol: string;
 }
 
 const supportedCurrencies = [
-  { name: "Australian dollar", value: "AUD" },
-  { name: "Brazilian real", value: "BRL" },
-  { name: "Canadian dollar", value: "CAD" },
-  { name: "Chinese Renmenbi", value: "CNY" },
-  { name: "Czech koruna", value: "CZK" },
-  { name: "Danish krone", value: "DKK" },
-  { name: "Euro", value: "EUR" },
-  { name: "Hong Kong dollar", value: "HKD" },
-  { name: "Hungarian forint", value: "HUF" },
-  { name: "Israeli new shekel", value: "ILS" },
-  { name: "Japanese yen", value: "JPY" },
-  { name: "Malaysian ringgit", value: "MYR" },
-  { name: "Mexican peso", value: "MXN" },
-  { name: "New Taiwan dollar", value: "TWD" },
-  { name: "New Zealand dollar", value: "NZD" },
-  { name: "Norwegian krone", value: "NOK" },
-  { name: "Philippine peso", value: "PHP" },
-  { name: "Polish złoty", value: "PLN" },
-  { name: "Pound sterling", value: "GBP" },
-  { name: "Singapore dollar", value: "SGD" },
-  { name: "Swedish krona", value: "SEK" },
-  { name: "Swiss franc", value: "CHF" },
-  { name: "Thai baht", value: "THB" },
-  { name: "United States dollar", value: "USD" },
+  { name: "Australian dollar", value: "AUD", symbol: "A$" },
+  { name: "Brazilian real", value: "BRL", symbol: "R$" },
+  { name: "Canadian dollar", value: "CAD", symbol: "C$" },
+  { name: "Chinese Renmenbi", value: "CNY", symbol: "¥" },
+  { name: "Czech koruna", value: "CZK", symbol: "Kč" },
+  { name: "Danish krone", value: "DKK", symbol: "kr" },
+  { name: "Euro", value: "EUR", symbol: "€" },
+  { name: "Hong Kong dollar", value: "HKD", symbol: "HK$" },
+  { name: "Hungarian forint", value: "HUF", symbol: "Ft" },
+  { name: "Israeli new shekel", value: "ILS", symbol: "₪" },
+  { name: "Japanese yen", value: "JPY", symbol: "¥" },
+  { name: "Malaysian ringgit", value: "MYR", symbol: "RM" },
+  { name: "Mexican peso", value: "MXN", symbol: "MX$" },
+  { name: "New Taiwan dollar", value: "TWD", symbol: "NT$" },
+  { name: "New Zealand dollar", value: "NZD", symbol: "NZ$" },
+  { name: "Norwegian krone", value: "NOK", symbol: "kr" },
+  { name: "Philippine peso", value: "PHP", symbol: "₱" },
+  { name: "Polish złoty", value: "PLN", symbol: "zł" },
+  { name: "Pound sterling", value: "GBP", symbol: "£" },
+  { name: "Singapore dollar", value: "SGD", symbol: "S$" },
+  { name: "Swedish krona", value: "SEK", symbol: "kr" },
+  { name: "Swiss franc", value: "CHF", symbol: "CHF" },
+  { name: "Thai baht", value: "THB", symbol: "฿" },
+  { name: "United States dollar", value: "USD", symbol: "$" },
 ] as const satisfies Currency[];
 
 const formDataSchema = z.object({
@@ -95,43 +96,55 @@ function App() {
   }, [handleSubmit, watch]);
 
   return (
-    <div>
-      <h1>PayPal.Me Link Generator</h1>
+    <div className="app">
+      <div className="container">
+        <h1>PayPal.Me Link Generator</h1>
 
-      <form>
-        <div>
-          <label htmlFor="username">Username</label>
-          <input type="text" {...register("username")} />
-          {errors.username && <p>{errors.username.message}</p>}
-        </div>
-        <div>
-          <label htmlFor="amount">Amount</label>
-          <input
-            type="number"
-            min="0"
-            step="0.01"
-            {...register("price.amount", {
-              min: 0,
-              valueAsNumber: true,
-            })}
-          />
-          {errors.price?.amount && <p>{errors.price.amount.message}</p>}
-        </div>
-        <div>
-          <label htmlFor="currency">Currency</label>
-          <select {...register("price.currency")}>
-            <option></option>
-            {supportedCurrencies.map((currency) => (
-              <option key={currency.value} value={currency.value}>
-                {currency.name} ({currency.value})
-              </option>
-            ))}
-          </select>
-          {errors.price?.currency && <p>{errors.price.currency.message}</p>}
-        </div>
-      </form>
+        <form className="form">
+          <div className="form__field">
+            <label className="form__label" htmlFor="username">
+              @
+            </label>
+            <input
+              className="form__input form__input--text"
+              type="text"
+              id="username"
+              {...register("username")}
+            />
+            {errors.username && <p>{errors.username.message}</p>}
+          </div>
+          <div className="form__field">
+            <label className="form__label" htmlFor="amount">
+              $
+            </label>
+            <input
+              className="form__input form__input--text"
+              type="number"
+              min="0"
+              step="0.01"
+              id="amount"
+              {...register("price.amount", {
+                min: 0,
+                valueAsNumber: true,
+              })}
+            />
+            <select
+              className="form__input form__input--select"
+              {...register("price.currency")}
+            >
+              <option></option>
+              {supportedCurrencies.map((currency) => (
+                <option key={currency.value} value={currency.value}>
+                  {currency.name} ({currency.value})
+                </option>
+              ))}
+            </select>
+            {errors.price?.amount && <p>{errors.price.amount.message}</p>}
+          </div>
+        </form>
 
-      {isValid && <output>{link}</output>}
+        {isValid && <output>{link}</output>}
+      </div>
     </div>
   );
 }
