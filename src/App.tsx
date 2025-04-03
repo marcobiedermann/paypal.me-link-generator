@@ -58,7 +58,7 @@ interface Settings {
 }
 
 function App() {
-  const [_state, copyToClipboard] = useCopyToClipboard();
+  const [, copyToClipboard] = useCopyToClipboard();
   const [defaultSettings, setDefaultSettings] = useLocalStorage<Settings>(
     "settings",
     { currency: "EUR" }
@@ -117,7 +117,11 @@ function App() {
           </div>
           <div className="form__field">
             <label className="form__label" htmlFor="amount">
-              $
+              {
+                supportedCurrencies.find(
+                  (supportedCurrency) => supportedCurrency.value === currency
+                )?.symbol
+              }
             </label>
             <input
               className="form__input form__input--text"
