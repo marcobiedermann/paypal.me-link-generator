@@ -44,28 +44,33 @@ const formDataSchema = z.object({
   username: z.string().trim().min(3),
   price: z.object({
     amount: z.number().positive(),
-    currency: z.string().trim().optional(),
+    currency: z.string().trim(),
   }),
 });
 
 type FormData = z.infer<typeof formDataSchema>;
 
+interface Settings {
+  username?: string;
+  currency: string;
+}
+
 function App() {
-  const [defaultUsername, setDefaultUsername] =
-    useLocalStorage<string>("paypay-username");
-  const [defaultCurrency, setDefaultCurrency] =
-    useLocalStorage<string>("currency");
+  const [defaultSettings, setDefaultSettings] = useLocalStorage<Settings>(
+    "settings",
+    { currency: "EUR" }
+  );
   const {
     formState: { errors, isValid },
+    handleSubmit,
     register,
     watch,
   } = useForm<FormData>({
     resolver: zodResolver(formDataSchema),
     defaultValues: {
-      username: defaultUsername,
+      username: defaultSettings?.username,
       price: {
-        amount: 10,
-        currency: defaultCurrency,
+        currency: defaultSettings?.currency,
       },
     },
     mode: "onBlur",
@@ -77,10 +82,17 @@ function App() {
   } = watch();
   const link = `https://paypal.me/${username}/${amount}${currency}`;
 
+  function onSubmit(data: FormData) {
+    setDefaultSettings({
+      username: data.username,
+      currency: data.price.currency,
+    });
+  }
+
   useEffect(() => {
-    setDefaultUsername(username);
-    setDefaultCurrency(currency);
-  }, [currency, username]);
+    const subscription = watch(() => handleSubmit(onSubmit)());
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, watch]);
 
   return (
     <div>
